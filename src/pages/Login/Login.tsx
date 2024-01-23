@@ -1,45 +1,42 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-
+import Input from 'src/Components/Input'
+import { schema, Schema } from 'src/utils/rules'
+type FormData = Pick<Schema, 'email' | 'password'>
+const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors }
-  } = useForm()
-  const onSubmit = handleSubmit(
-    (data) => console.log(data),
-    (data) => {
-      const password = getValues('password')
-    }
-  )
+  } = useForm<FormData>({
+    resolver: yupResolver(loginSchema)
+  })
+  const onSubmit = handleSubmit((data) => console.log(data))
   return (
     <div className='bg-orange'>
-      <div className='max-w-7xl mx-auto px-4'>
+      <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
             <form className='p-10 rounded bg-white shadow-sm' onSubmit={onSubmit}>
               <div className='text-2xl'>Đăng nhập</div>
-              <div className='mt-8'>
-                <input
-                  type='email'
-                  name='email'
-                  placeholder='Email'
-                  className='py-3 pl-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-color'
-                />
-                <div className='mt-1 text-red-600 text-sm .min-h-[1rem]'>Email không hợp lệ</div>
-              </div>
-              <div className='mt-3'>
-                <input
-                  type='password'
-                  autoComplete='on'
-                  name='password'
-                  placeholder='Password'
-                  className='py-3 pl-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-color'
-                />
-                <div className='mt-1 text-red-600 text-sm .min-h-[1rem]'>Mật khẩu không hợp lệ</div>
-              </div>
+              <Input
+                className='mt-8'
+                name='email'
+                placeholder='Email'
+                type='email'
+                register={register}
+                errorMessage={errors.email?.message}
+              />
+              <Input
+                className='mt-2'
+                name='password'
+                placeholder='Password'
+                type='password'
+                register={register}
+                errorMessage={errors.password?.message}
+              />
               <div className='mt-3'>
                 <button
                   type='submit'
